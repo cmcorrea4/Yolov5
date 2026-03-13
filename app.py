@@ -1,9 +1,9 @@
-import cv2
+from PIL import Image
+import io
 import streamlit as st
 import numpy as np
 import pandas as pd
 import torch
-import os
 
 st.set_page_config(
     page_title="Detección de Objetos en Tiempo Real",
@@ -15,7 +15,7 @@ st.set_page_config(
 def load_model():
     try:
         from ultralytics import YOLO
-        model = YOLO("yolov5su.pt")  # Descarga automática
+        model = YOLO("yolov5su.pt")
         return model
     except Exception as e:
         st.error(f"❌ Error al cargar el modelo: {str(e)}")
@@ -39,38 +39,38 @@ if model:
 
     if picture:
         bytes_data = picture.getvalue()
-        cv2_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
+
+        # Decodificar con Pillow en lugar de cv2 (evita dependencia libGL)
+        pil_img  = Image.open(io.BytesIO(bytes_data)).convert("RGB")
+        np_img   = np.array(pil_img)   # array RGB
 
         with st.spinner("Detectando objetos..."):
             try:
                 results = model(
-                    cv2_img,
+                    np_img,
                     conf=conf_threshold,
                     iou=iou_threshold,
-                    max_det=max_det
+                    max_det=int(max_det)
                 )
             except Exception as e:
                 st.error(f"Error durante la detección: {str(e)}")
                 st.stop()
 
-        result     = results[0]
-        boxes      = result.boxes
-        annotated  = result.plot()  # imagen con bounding boxes dibujadas
+        result    = results[0]
+        boxes     = result.boxes
+        annotated = result.plot()              # devuelve BGR numpy array
+        annotated_rgb = annotated[:, :, ::-1]  # BGR → RGB sin cv2
 
         col1, col2 = st.columns(2)
 
         with col1:
             st.subheader("Imagen con detecciones")
-            st.image(annotated, channels="BGR", use_container_width=True)
+            st.image(annotated_rgb, use_container_width=True)
 
         with col2:
             st.subheader("Objetos detectados")
-
-            if boxes and len(boxes) > 0:
-                label_names = model.names
-                data = []
-
-                # Agrupar por categoría
+            if boxes is not None and len(boxes) > 0:
+                label_names    = model.names
                 category_count = {}
                 category_conf  = {}
 
@@ -80,12 +80,14 @@ if model:
                     category_count[cat] = category_count.get(cat, 0) + 1
                     category_conf.setdefault(cat, []).append(conf)
 
-                for cat, count in category_count.items():
-                    data.append({
+                data = [
+                    {
                         "Categoría":          label_names[cat],
                         "Cantidad":           count,
                         "Confianza promedio": f"{np.mean(category_conf[cat]):.2f}"
-                    })
+                    }
+                    for cat, count in category_count.items()
+                ]
 
                 df = pd.DataFrame(data)
                 st.dataframe(df, use_container_width=True)
