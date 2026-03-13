@@ -1,104 +1,136 @@
-# Yolov5
-# Aplicación de Detección de Objetos en Tiempo Real
+# 🔍 Detección de Objetos con YOLOv5
 
-Esta aplicación web permite realizar detección de objetos en tiempo real utilizando la cámara web del dispositivo. Está construida con Streamlit y utiliza el modelo YOLOv5 para la detección de objetos.
+Aplicación web para detección de objetos en tiempo real usando **YOLOv5** + **Streamlit**. Captura una imagen con tu cámara y el modelo identifica automáticamente los objetos presentes.
 
-## Características
+![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.28+-red?logo=streamlit)
+![YOLOv5](https://img.shields.io/badge/YOLO-v5su-green?logo=pytorch)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
-- Captura de imágenes en tiempo real mediante la cámara web
-- Detección de múltiples objetos en una sola imagen
-- Interfaz gráfica interactiva con controles ajustables
-- Visualización de resultados con bounding boxes
-- Conteo y clasificación de objetos detectados
+---
 
-## Requisitos
+## 🚀 Demo
+
+👉 [Ver aplicación en Streamlit Cloud](https://yolov5cmc.streamlit.app)
+
+---
+
+## ✨ Funcionalidades
+
+- 📸 Captura de imagen directamente desde la cámara del dispositivo
+- 🤖 Detección automática de **80 clases** de objetos (dataset COCO)
+- 🎛️ Parámetros ajustables en tiempo real desde la barra lateral:
+  - Umbral de confianza mínima
+  - Umbral IoU (Non-Max Suppression)
+  - Número máximo de detecciones
+- 📊 Tabla resumen con categorías detectadas, cantidad y confianza promedio
+- 📈 Gráfico de barras por categoría
+
+---
+
+## 🛠️ Tecnologías
+
+| Tecnología | Uso |
+|------------|-----|
+| [Streamlit](https://streamlit.io) | Interfaz web |
+| [Ultralytics YOLOv5](https://github.com/ultralytics/ultralytics) | Modelo de detección |
+| [PyTorch](https://pytorch.org) | Backend de inferencia |
+| [Pillow](https://python-pillow.org) | Procesamiento de imágenes |
+| [NumPy](https://numpy.org) | Manipulación de arrays |
+| [Pandas](https://pandas.pydata.org) | Tabla de resultados |
+
+---
+
+## 📁 Estructura del proyecto
 
 ```
-cv2
-yolov5
-streamlit
-numpy
-pandas
+yolov5/
+├── app.py              # Aplicación principal
+├── requirements.txt    # Dependencias Python (pip)
+├── packages.txt        # Dependencias del sistema (apt-get)
+└── README.md
 ```
 
-## Instalación
+---
 
-1. Clone este repositorio:
+## ⚙️ Instalación local
+
+### Prerrequisitos
+- Python 3.11+
+- pip
+
+### Pasos
+
 ```bash
-git clone <url-del-repositorio>
-cd <nombre-del-directorio>
-```
+# 1. Clonar el repositorio
+git clone https://github.com/cmcorrea4/yolov5.git
+cd yolov5
 
-2. Instale las dependencias:
-```bash
+# 2. Crear entorno virtual (recomendado)
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+
+# 3. Instalar dependencias
 pip install -r requirements.txt
-```
 
-3. Descargue el modelo pre-entrenado YOLOv5:
-```bash
-wget https://github.com/ultralytics/yolov5/releases/download/v6.1/yolov5s.pt
-```
-
-## Uso
-
-1. Ejecute la aplicación:
-```bash
+# 4. Ejecutar la aplicación
 streamlit run app.py
 ```
 
-2. Acceda a la aplicación a través de su navegador web (por defecto en `http://localhost:8501`)
+La aplicación estará disponible en `http://localhost:8501`
 
-3. Configure los parámetros de detección en la barra lateral:
-   - **IoU (Intersection over Union)**: Ajuste el umbral de superposición para la detección de objetos (0-1)
-   - **Confidence**: Ajuste el umbral de confianza para las detecciones (0-1)
+---
 
-4. Utilice el botón "Capturar foto" para tomar una imagen con su cámara web
+## ☁️ Despliegue en Streamlit Cloud
 
-## Estructura de la Aplicación
+1. Sube el repositorio a GitHub
+2. Ve a [share.streamlit.io](https://share.streamlit.io)
+3. Conecta tu repositorio
+4. Selecciona `app.py` como archivo principal
+5. Haz clic en **Deploy**
 
-La aplicación se divide en dos secciones principales:
+> **Nota:** Los archivos `requirements.txt` y `packages.txt` son detectados automáticamente por Streamlit Cloud para instalar dependencias Python y del sistema operativo respectivamente.
 
-### Barra Lateral (Sidebar)
-- Controles deslizantes para ajustar los parámetros IoU y Confidence
-- Visualización en tiempo real de los valores seleccionados
+---
 
-### Área Principal
-- Interfaz de captura de imagen
-- Visualización de resultados en dos columnas:
-  - Columna 1: Imagen con las detecciones marcadas
-  - Columna 2: Tabla de resumen con el conteo de objetos detectados
+## 📦 Dependencias del sistema
 
-## Parámetros del Modelo
+El archivo `packages.txt` instala las librerías del sistema operativo necesarias para que OpenCV funcione en el servidor de Streamlit Cloud (Debian/Ubuntu):
 
-- `model.conf = 0.25` - Umbral de confianza para NMS (Non-Maximum Suppression)
-- `model.iou = 0.45` - Umbral IoU para NMS
-- `model.agnostic = False` - NMS específico por clase
-- `model.multi_label = False` - Una etiqueta por caja
-- `model.max_det = 1000` - Número máximo de detecciones por imagen
+```
+libgl1
+libglib2.0-0t64
+```
 
-## Funcionamiento
+---
 
-1. La aplicación captura una imagen a través de la cámara web
-2. La imagen se procesa utilizando el modelo YOLOv5
-3. Se aplican las detecciones y se visualizan los resultados
-4. Se genera una tabla con el conteo de objetos detectados
+## 🎯 Clases detectables
 
-## Notas Técnicas
+El modelo `yolov5su.pt` está pre-entrenado en el dataset **COCO** y detecta 80 clases:
 
-- El modelo utiliza YOLOv5s, que es una versión ligera optimizada para el rendimiento
-- Las imágenes se procesan en formato BGR (OpenCV)
-- Los resultados se muestran en tiempo real sin necesidad de recargar la página
+<details>
+<summary>Ver todas las clases</summary>
 
-## Limitaciones
+`person` · `bicycle` · `car` · `motorcycle` · `airplane` · `bus` · `train` · `truck` · `boat` · `traffic light` · `fire hydrant` · `stop sign` · `parking meter` · `bench` · `bird` · `cat` · `dog` · `horse` · `sheep` · `cow` · `elephant` · `bear` · `zebra` · `giraffe` · `backpack` · `umbrella` · `handbag` · `tie` · `suitcase` · `frisbee` · `skis` · `snowboard` · `sports ball` · `kite` · `baseball bat` · `baseball glove` · `skateboard` · `surfboard` · `tennis racket` · `bottle` · `wine glass` · `cup` · `fork` · `knife` · `spoon` · `bowl` · `banana` · `apple` · `sandwich` · `orange` · `broccoli` · `carrot` · `hot dog` · `pizza` · `donut` · `cake` · `chair` · `couch` · `potted plant` · `bed` · `dining table` · `toilet` · `tv` · `laptop` · `mouse` · `remote` · `keyboard` · `cell phone` · `microwave` · `oven` · `toaster` · `sink` · `refrigerator` · `book` · `clock` · `vase` · `scissors` · `teddy bear` · `hair drier` · `toothbrush`
 
-- El rendimiento depende de la capacidad de procesamiento del dispositivo
-- La calidad de la detección puede variar según las condiciones de iluminación
-- Se requiere una cámara web funcional para su uso
+</details>
 
-## Contribuciones
+---
 
-Las contribuciones son bienvenidas. Por favor, abra un issue primero para discutir los cambios que le gustaría realizar.
+## 🧑‍💻 Uso
 
-## Licencia
+1. Abre la aplicación
+2. Ajusta los parámetros en la barra lateral según necesites
+3. Haz clic en **"Capturar imagen"** para activar la cámara
+4. Toma la foto
+5. El modelo procesará la imagen y mostrará:
+   - La imagen con los bounding boxes dibujados
+   - Una tabla con los objetos detectados
+   - Un gráfico de barras con el conteo por categoría
 
-CC
+---
+
+## 📄 Licencia
+
+MIT License — libre para usar, modificar y distribuir.
