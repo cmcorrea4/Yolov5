@@ -41,9 +41,13 @@ if model:
         bytes_data = picture.getvalue()
 
         # Decodificar con Pillow en lugar de cv2 (evita dependencia libGL)
-        pil_img  = Image.open(io.BytesIO(bytes_data)).convert("RGB")
-        np_img   = np.array(pil_img)   # array RGB
+        #pil_img  = Image.open(io.BytesIO(bytes_data)).convert("RGB")
+        #np_img   = np.array(pil_img)   # array RGB
 
+        pil_img = Image.open(io.BytesIO(bytes_data)).convert("RGB")
+        np_img  = np.array(pil_img)[..., ::-1]  # RGB → BGR para que YOLO procese bien
+
+        
         with st.spinner("Detectando objetos..."):
             try:
                 results = model(
